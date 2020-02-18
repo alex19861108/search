@@ -10,7 +10,7 @@ import logging
 from datetime import datetime
 from pyes import ES
 from uliweb import settings, functions
-from apps.job import BatchJob
+from apps.build import BatchJob
 
 log = logging.getLogger(__name__)
 

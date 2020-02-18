@@ -3,3 +3,5 @@ uliweb-ui
 uliweb-layout
 uliweb-apps
 sqlalchemy
+pyes
+mysqlclient
