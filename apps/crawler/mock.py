@@ -23,6 +23,7 @@ def read_file(fname):
 
 mock_portal = read_file(os.path.join(apps_dir, "crawler", "data", "portal.txt"))
 mock_forumpost = read_file(os.path.join(apps_dir, "crawler", "data", "forumpost.txt"))
+mock_wiki = read_file(os.path.join(apps_dir, "crawler", "data", "wikipage.txt"))
 
 
 @expose("/mp_e/header/getApp")

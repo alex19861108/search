@@ -25,6 +25,7 @@ class SearchView(object):
         return fields
 
     @expose("indices")
+    @CORS
     def indices(self):
         data = [{"name": item.name, "cn_name": item.cn_name} for item in self.resource.filter(self.resource.c.deleted == 0)]
         return json(data)
@@ -87,11 +88,11 @@ class SearchView(object):
         index = request.values.get("index").replace(" ", "") if request.values.get("index") else self.index
         wd = request.values.get("wd", "")
         page = int(request.values.get("page", 1))
-        size = int(request.values.get("size", 100))
+        size = int(request.values.get("size", 1000))
         start = (page - 1) * size
 
         sort = [
-            "level1_ref",
+            {"level1_ref.title": {"nested": {"path": "level1_ref"}}},
             {"level2_ref.title": {"nested": {"path": "level2_ref"}}}
         ]
         total, data = self._search(wd, index, start=start, size=size, sort=sort)

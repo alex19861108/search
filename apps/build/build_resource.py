@@ -24,6 +24,7 @@ class Builder:
         """
         资源入库
         """
+        log.info("loading resource [{}]...".format(obj.name))
         config = json.loads(obj.config)
 
         # 数据存储在ES的索引
@@ -46,13 +47,13 @@ class Builder:
             log.info("[builder.load_resource]: {}".format(crawler_api))
             # response = requests.get(crawler_api).json()
 
-            from apps.crawler.mock import mock_portal, mock_forumpost
+            from apps.crawler.mock import mock_portal, mock_forumpost, mock_wiki
             if index == "portal":
                 mock_response = mock_portal
             elif index == "forumpost":
                 mock_response = mock_forumpost
-            else:
-                mock_response = json.dumps(mock_forumpost)
+            elif index == "wiki":
+                mock_response = mock_wiki
             response = json.loads(mock_response)
             data = response.get("data")
 
