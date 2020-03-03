@@ -59,6 +59,7 @@ class SearchView(object):
         return result["hits"]["total"]["value"], data
 
     @expose("")
+    @CORS
     def search(self):
         """
         参数：
