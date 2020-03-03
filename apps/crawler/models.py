@@ -1,16 +1,13 @@
-import datetime
-from uliweb import settings
-from uliweb.orm import Model, Field, Reference, Text
+from uliweb.orm import Model, TimestampProperty, TextProperty, StringProperty, BooleanProperty
 
-
-def generate_page_type_choices():
-    choices = []
-    for site_name, site_config in settings.get_var("CRAWLER/CRAWL_APIS").items():
-        choices.append((site_name, site_config.get("name")))
-
-
-class Page(Model):
-    url = Field(str, primary_key=True, index=True, required=True, max_length=2048, verbose_name="页面url,页面存储时作为主键")
-    content = Field(Text, verbose_name="页面内容")
-    site = Field(str, verbose_name="页面站点", choices=generate_page_type_choices())
-    update_time = Field(datetime.datetime, verbose_name="更新时间")
+    
+class Resource(Model):
+    """ 资源方 """
+    name = StringProperty(primary_key=True, index=True, required=True, max_length=20, verbose_name="英文名, 唯一标识")
+    cn_name = StringProperty(max_length=20, verbose_name="中文名")
+    config = TextProperty(verbose_name="资源配置")
+    mapping = TextProperty(verbose_name="ES中的mapping配置")
+    create_time = TimestampProperty(verbose_name="接入时间")
+    contact = StringProperty(max_length=20, verbose_name="联系人")
+    desc = TextProperty(verbose_name="资源描述")
+    deleted = BooleanProperty(default=0, verbose_name="逻辑删除标记")
