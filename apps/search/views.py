@@ -102,7 +102,7 @@ class SearchView(object):
         level3_children = list()
         last_item = None
         for item in data:
-            if last_item and last_item["level1_ref"] == item["level1_ref"]:
+            if last_item and last_item["level1_ref"]["title"] == item["level1_ref"]["title"]:
                 if last_item["level2_ref"] == item["level2_ref"]:
                     level3_children.append({
                         "name": item["name"],
