@@ -116,7 +116,7 @@ class SearchView(object):
                         "name": last_item["level2_ref"]["name"],
                         "url": last_item["level2_ref"]["url"],
                         "title": last_item["level2_ref"]["title"],
-                        # "desc": last_item["level2_ref"]["desc"],
+                        "desc": last_item["level2_ref"]["desc"],
                         # "breadcrumb": last_item["breadcrumb"],
                         "children": level3_children
                     })
@@ -134,15 +134,15 @@ class SearchView(object):
                         "name": last_item["level2_ref"]["name"],
                         "url": last_item["level2_ref"]["url"],
                         "title": last_item["level2_ref"]["title"],
-                        # "desc": last_item["level2_ref"]["desc"],
+                        "desc": last_item["level2_ref"]["desc"],
                         # "breadcrumb": last_item["level2_ref"]["breadcrumb"],
                         "children": level3_children
                     })
                     level1_children.append({
-                        "name": last_item["level1_ref"],
-                        "url": "",
-                        "title": last_item["level1_ref"],
-                        "desc": "",
+                        "name": last_item["level1_ref"]["name"],
+                        "url": last_item["level1_ref"]["url"],
+                        "title": last_item["level1_ref"]["title"],
+                        "desc": last_item["level1_ref"]["desc"],
                         "children": level2_children
                     })
                 level2_children = list()
@@ -163,14 +163,14 @@ class SearchView(object):
                 "name": last_item["level2_ref"]["name"],
                 "url": last_item["level2_ref"]["url"],
                 "title": last_item["level2_ref"]["title"],
-                # "desc": last_item["level2_ref"]["desc"],
+                "desc": last_item["level2_ref"]["desc"],
                 "children": level3_children
             })
             level1_children.append({
-                "name": last_item["level1_ref"],
-                "url": "",
-                "title": last_item["level1_ref"],
-                # "desc": last_item["desc"],
+                "name": last_item["level1_ref"]["name"],
+                "url": last_item["level1_ref"]["url"],
+                "title": last_item["level1_ref"]["title"],
+                "desc": last_item["level1_ref"]["desc"],
                 "children": level2_children
             })
 
