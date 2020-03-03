@@ -50,14 +50,7 @@ class SearchView(object):
         body.update(kwargs)
 
         result = self.conn.search(index=index, body=body)
-        data = [item["_source"] for item in result["hits"]["hits"]]
-        # highlight = [item["highlight"] for item in result["hits"]["hits"]]
-        # for idx, item in enumerate(data):
-        #     hl = highlight[idx]
-        #     for k, v in hl.items():
-        #         if k in item.keys():
-        #             item[k] = v
-        return result["hits"]["total"]["value"], data
+        return result["hits"]["total"]["value"], result["hits"]["hits"]
 
     @expose("")
     @CORS
@@ -73,8 +66,17 @@ class SearchView(object):
         size = int(request.values.get("size", 10))
         start = (page - 1) * size
 
-        total, data = self._search(wd, index, start=start, size=size)
-
+        total, hits = self._search(wd, index, start=start, size=size)
+        data = [item["_source"] for item in hits]
+        highlight = [item["highlight"] for item in hits]
+        for idx, item in enumerate(data):
+            hl = highlight[idx]
+            for k, v in hl.items():
+                if k in item.keys():
+                    if isinstance(v, list):
+                        item[k] = "...".join(v)
+                    else:
+                        item[k] = v
         return json({
             "total": total,
             "data": data,
@@ -95,7 +97,8 @@ class SearchView(object):
             {"level1_ref.title": {"nested": {"path": "level1_ref"}}},
             {"level2_ref.title": {"nested": {"path": "level2_ref"}}}
         ]
-        total, data = self._search(wd, index, start=start, size=size, sort=sort)
+        total, hits = self._search(wd, index, start=start, size=size, sort=sort)
+        data = [item["_source"] for item in hits]
 
         level1_children = list()
         level2_children = list()
