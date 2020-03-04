@@ -25,7 +25,8 @@ class SearchView(object):
     @expose("/api/indices")
     @CORS
     def indices(self):
-        data = [{"name": item.name, "cn_name": item.cn_name} for item in self.resource.filter(self.resource.c.deleted == 0)]
+        resources = self.resource.filter(self.resource.c.deleted == 0).order_by(self.resource.c.order)
+        data = [{"name": item.name, "cn_name": item.cn_name} for item in resources]
         return json(data)
 
     def _search(self, wd, index, start=0, size=10, **kwargs):
@@ -87,11 +88,11 @@ class SearchView(object):
     def sug(self):
         index = request.values.get("index", "portal").replace(" ", "")
         if index == "portal":
-            return self.sug_portal(index)
+            return self.portal_suggester(index)
         else:
-            return self._sug(index)
+            return self.term_suggester(index)
 
-    def sug_portal(self, index="portal"):
+    def portal_suggester(self, index="portal"):
         wd = request.values.get("wd", "")
         page = int(request.values.get("page", 1))
         size = int(request.values.get("size", 1000))
@@ -188,6 +189,89 @@ class SearchView(object):
             "size": size
         })
 
-    def _sug(self, wd, index, **kwargs):
+    def completion_suggester(self, index, size=20):
+        wd = request.values.get("wd", "")
         fields = self.generate_fields(index)
-        pass
+        body = {
+            "suggest": {
+                "sug": {
+                    "prefix": wd,
+                    "completion": {
+                        "field": "title.suggest",
+                        "size": size,
+                        "skip_duplicates": True,
+                        "fuzzy": {
+                            "fuzziness": 2
+                        }
+                    }
+                }
+            }
+        }
+
+        result = self.conn.search(index=index, body=body)
+        data = list()
+        for sug in result["suggest"]["sug"]:
+            for opt in sug["options"]:
+                data.append(opt["text"])
+
+        return json({
+            "total": result["hits"]["total"]["value"],
+            "data": data
+        })
+
+    def phrase_suggester(self, index, size=5):
+        wd = request.values.get("wd", "")
+        field = "title"
+        body = {
+            "suggest": {
+                "sug": {
+                    "text": wd,
+                    "phrase": {
+                        "field": field,
+                        "size": size,
+                        "highlight": {
+                            "pre_tag": "<em>",
+                            "post_tag": "</em>"
+                        }
+                    }
+                }
+            }
+        }
+        result = self.conn.search(index=index, body=body)
+        data = list()
+        for sug in result["suggest"]["sug"]:
+            for opt in sug["options"]:
+                data.append(opt["text"])
+
+        return json({
+            "total": result["hits"]["total"]["value"],
+            "data": data
+        })
+
+    def term_suggester(self, index, size=5):
+        wd = request.values.get("wd", "")
+        field = "content"
+        body = {
+            "suggest": {
+                "sug": {
+                    "text": wd,
+                    "term": {
+                        "suggest_mode": "popular",
+                        "min_word_length": 2,
+                        "field": field,
+                        "size": size,
+                        "string_distance": "ngram"
+                    }
+                }
+            }
+        }
+        result = self.conn.search(index=index, body=body)
+        data = list()
+        for sug in result["suggest"]["sug"]:
+            for opt in sug["options"]:
+                data.append(opt["text"])
+
+        return json({
+            "total": result["hits"]["total"]["value"],
+            "data": data
+        })

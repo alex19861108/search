@@ -1,4 +1,4 @@
-from uliweb.orm import Model, TimestampProperty, TextProperty, StringProperty, BooleanProperty
+from uliweb.orm import Model, TimestampProperty, TextProperty, StringProperty, BooleanProperty, IntegerProperty
 
     
 class Resource(Model):
@@ -11,3 +11,4 @@ class Resource(Model):
     contact = StringProperty(max_length=20, verbose_name="联系人")
     desc = TextProperty(verbose_name="资源描述")
     deleted = BooleanProperty(default=0, verbose_name="逻辑删除标记")
+    order = IntegerProperty(verbose_name="排序序号", required=True)
