@@ -1,10 +1,8 @@
 from json import loads as json_loads
 from elasticsearch import Elasticsearch
-from pyes import ES, HighLighter, Search, MultiMatchQuery
 from uliweb import expose, settings, request, json, functions, CORS
 
 
-@expose("/api/search")
 class SearchView(object):
 
     def __init__(self):
@@ -24,7 +22,7 @@ class SearchView(object):
                 fields.append(column)
         return fields
 
-    @expose("indices")
+    @expose("/api/indices")
     @CORS
     def indices(self):
         data = [{"name": item.name, "cn_name": item.cn_name} for item in self.resource.filter(self.resource.c.deleted == 0)]
@@ -52,7 +50,7 @@ class SearchView(object):
         result = self.conn.search(index=index, body=body)
         return result["hits"]["total"]["value"], result["hits"]["hits"]
 
-    @expose("")
+    @expose("/api/search")
     @CORS
     def search(self):
         """
@@ -84,10 +82,16 @@ class SearchView(object):
             "size": size
         })
 
-    @expose("portal", methods=['GET'])
+    @expose("/api/sug", methods=['GET'])
     @CORS
-    def search_portal(self):
+    def sug(self):
         index = request.values.get("index", "portal").replace(" ", "")
+        if index == "portal":
+            return self.sug_portal(index)
+        else:
+            return self._sug(index)
+
+    def sug_portal(self, index="portal"):
         wd = request.values.get("wd", "")
         page = int(request.values.get("page", 1))
         size = int(request.values.get("size", 1000))
@@ -184,3 +188,6 @@ class SearchView(object):
             "size": size
         })
 
+    def _sug(self, wd, index, **kwargs):
+        fields = self.generate_fields(index)
+        pass
