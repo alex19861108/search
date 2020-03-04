@@ -87,7 +87,7 @@ class SearchView(object):
     @expose("portal", methods=['GET'])
     @CORS
     def search_portal(self):
-        index = request.values.get("index").replace(" ", "") if request.values.get("index") else self.index
+        index = request.values.get("index", "portal").replace(" ", "")
         wd = request.values.get("wd", "")
         page = int(request.values.get("page", 1))
         size = int(request.values.get("size", 1000))
